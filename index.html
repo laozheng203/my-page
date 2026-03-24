@@ -3,21 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AIGC提示词视频分析工具</title>
+  <title>视频管理中心</title>
   <style>
     :root {
       --primary: #0ea5e9;
-      --primary-dark: #0284c7;
-      --primary-darker: #0369a1;
       --bg-dark: #0c1222;
       --bg-card: #131b2e;
       --bg-input: #1a2342;
       --border: #2a3650;
       --text: #e2e8f0;
       --text-muted: #94a3b8;
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --danger: #ef4444;
     }
 
     * {
@@ -27,129 +22,47 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg-dark) 0%, #0f172a 50%, #0c1222 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #0f172a 100%);
       min-height: 100vh;
       color: var(--text);
-      line-height: 1.6;
+      padding: 20px;
     }
 
     .container {
       max-width: 900px;
       margin: 0 auto;
-      padding: 40px 20px;
     }
 
-    .header {
+    header {
       text-align: center;
       margin-bottom: 40px;
     }
 
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-darker));
-      border-radius: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 40px rgba(14, 165, 233, 0.3);
-      font-size: 36px;
-    }
-
     h1 {
-      font-size: clamp(24px, 5vw, 36px);
-      font-weight: 700;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: clamp(24px, 5vw, 32px);
+      margin-bottom: 8px;
     }
 
     .subtitle {
       color: var(--text-muted);
-      font-size: 16px;
     }
 
-    .card {
+    .upload-section {
       background: var(--bg-card);
       border-radius: 16px;
       padding: 32px;
       margin-bottom: 24px;
       border: 1px solid var(--border);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-title::before {
-      content: '';
-      width: 4px;
-      height: 20px;
-      background: var(--primary);
-      border-radius: 2px;
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .label-hint {
-      font-weight: 400;
-      color: var(--text-muted);
-      font-size: 13px;
-      margin-left: 8px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      padding: 16px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 15px;
-      font-family: inherit;
-      line-height: 1.6;
-      resize: vertical;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-    }
-
-    textarea::placeholder {
-      color: var(--text-muted);
+      text-align: center;
     }
 
     .upload-area {
       border: 2px dashed var(--border);
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 40px 20px;
-      text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
-      background: var(--bg-input);
+      transition: all 0.3s;
     }
 
     .upload-area:hover {
@@ -157,23 +70,14 @@
       background: rgba(14, 165, 233, 0.05);
     }
 
-    .upload-area.dragover {
-      border-color: var(--primary);
-      background: rgba(14, 165, 233, 0.1);
-    }
-
-    .upload-area.has-video {
-      padding: 20px;
-    }
-
     .upload-icon {
       font-size: 48px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .upload-text {
       color: var(--text-muted);
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .upload-hint {
@@ -181,695 +85,419 @@
       color: var(--text-muted);
     }
 
-    #videoFile {
+    #fileInput {
       display: none;
     }
 
-    .video-preview {
-      display: none;
-      margin-top: 20px;
+    .video-list {
+      display: grid;
+      gap: 16px;
     }
 
-    .video-preview.show {
-      display: block;
-    }
-
-    .video-player {
-      width: 100%;
-      max-height: 300px;
+    .video-item {
+      background: var(--bg-card);
       border-radius: 12px;
-      background: #000;
-    }
-
-    .video-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      padding: 12px;
-      background: var(--bg-input);
-      border-radius: 8px;
-    }
-
-    .video-name {
-      font-size: 14px;
-      color: var(--text);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 70%;
-    }
-
-    .video-remove {
-      padding: 6px 12px;
-      background: var(--danger);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .frame-section {
-      display: none;
-      margin-top: 20px;
-    }
-
-    .frame-section.show {
-      display: block;
-    }
-
-    .frame-buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .btn-sm {
-      padding: 8px 16px;
-      background: var(--bg-input);
-      color: var(--text);
+      padding: 20px;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       transition: all 0.3s;
     }
 
-    .btn-sm:hover {
+    .video-item:hover {
       border-color: var(--primary);
-      color: var(--primary);
     }
 
-    .frames-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 12px;
+    .video-icon {
+      font-size: 32px;
+      flex-shrink: 0;
     }
 
-    .frame-item {
-      position: relative;
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--bg-input);
+    .video-info {
+      flex: 1;
+      min-width: 0;
     }
 
-    .frame-item img {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
-    }
-
-    .frame-item .time {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      font-size: 12px;
-      padding: 4px 8px;
-      text-align: center;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 16px 40px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .result-section {
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .score-card {
-      text-align: center;
-      padding: 40px;
-      background: linear-gradient(135deg, var(--bg-input) 0%, var(--bg-card) 100%);
-      border-radius: 16px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border);
-    }
-
-    .score-label {
-      font-size: 16px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .score-value {
-      font-size: 80px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .score-high { color: var(--success); }
-    .score-mid { color: var(--warning); }
-    .score-low { color: var(--danger); }
-
-    .score-desc {
-      margin-top: 12px;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .result-card {
-      margin-bottom: 20px;
-    }
-
-    .result-card h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .result-card .content {
-      color: var(--text-muted);
-      line-height: 1.8;
-      white-space: pre-wrap;
-    }
-
-    .result-card .content strong {
-      color: var(--text);
-    }
-
-    .result-card .content ul {
-      margin: 12px 0;
-      padding-left: 20px;
-    }
-
-    .result-card .content li {
-      margin-bottom: 8px;
-    }
-
-    .optimized-prompt {
-      background: var(--bg-input);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 16px;
-      border-left: 4px solid var(--success);
-    }
-
-    .optimized-prompt-label {
-      font-size: 13px;
-      color: var(--success);
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .optimized-prompt-content {
-      color: var(--text);
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 14px;
-      line-height: 1.8;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 40px;
-    }
-
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .tips {
-      background: rgba(14, 165, 233, 0.1);
-      border: 1px solid rgba(14, 165, 233, 0.3);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 24px;
-    }
-
-    .tips-title {
-      font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 12px;
+    .video-name {
+      font-weight: 500;
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .tips-list {
-      color: var(--text-muted);
+    .video-name input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: var(--text);
       font-size: 14px;
+      flex: 1;
     }
 
-    .tips-list li {
-      margin-bottom: 8px;
+    .video-name input:focus {
+      outline: none;
+      border-color: var(--primary);
     }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px 16px;
+    .video-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .video-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .btn-play {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-play:hover {
+      background: #0284c7;
+    }
+
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #dc2626;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    /* 视频播放弹窗 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .modal-content video {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 8px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .count {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .video-item {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .card {
-        padding: 20px;
+      .video-actions {
+        width: 100%;
       }
 
-      .score-value {
-        font-size: 60px;
-      }
-
-      textarea {
-        min-height: 120px;
+      .btn {
+        flex: 1;
+        text-align: center;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <div class="logo">🎬</div>
-      <h1>AIGC提示词视频分析工具</h1>
-      <p class="subtitle">Prompt × Video · 专业评估与优化建议</p>
+    <header>
+      <h1>📹 视频管理中心</h1>
+      <p class="subtitle">本地存储 · 随时播放</p>
     </header>
 
-    <div class="card">
-      <h2 class="card-title">输入区</h2>
-      
-      <div class="form-group">
-        <label>
-          提示词原文
-          <span class="label-hint">粘贴完整的AI提示词</span>
-        </label>
-        <textarea id="promptInput" placeholder="例如：
-请生成一个汽车展示视频：
-- 场景：4S店展厅
-- 主角：豪华轿车
-- 动作：缓慢驶入画面
-- 风格：高端大气"></textarea>
+    <div class="upload-section">
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">📤</div>
+        <div class="upload-text">点击上传视频文件</div>
+        <div class="upload-hint">支持 MP4, MOV, AVI, WebM 格式</div>
       </div>
-
-      <div class="form-group">
-        <label>
-          视频上传
-          <span class="label-hint">支持 .mp4 / .mov / .avi / .webm 格式</span>
-        </label>
-        
-        <div class="upload-area" id="uploadArea" onclick="document.getElementById('videoFile').click()">
-          <div class="upload-icon">📹</div>
-          <div class="upload-text">点击或拖拽视频文件到这里</div>
-          <div class="upload-hint">支持 mp4, mov, avi, webm 等常见格式</div>
-        </div>
-        <input type="file" id="videoFile" accept="video/*" style="display: none;">
-        
-        <div class="video-preview" id="videoPreview">
-          <video id="videoPlayer" class="video-player" controls></video>
-          <div class="video-info">
-            <span class="video-name" id="videoName"></span>
-            <button class="video-remove" onclick="removeVideo()">删除</button>
-          </div>
-        </div>
-
-        <div class="frame-section" id="frameSection">
-          <label>视频截图（点击截取关键帧用于分析）</label>
-          <div class="frame-buttons">
-            <button class="btn-sm" onclick="captureFrame(0)">📸 开头帧</button>
-            <button class="btn-sm" onclick="captureFrame(0.25)">📸 1/4帧</button>
-            <button class="btn-sm" onclick="captureFrame(0.5)">📸 中间帧</button>
-            <button class="btn-sm" onclick="captureFrame(0.75)">📸 3/4帧</button>
-            <button class="btn-sm" onclick="captureFrame('end')">📸 结尾帧</button>
-          </div>
-          <div class="frames-grid" id="framesGrid"></div>
-        </div>
-      </div>
-
-      <button class="btn" id="analyzeBtn" onclick="analyze()">
-        <span>🔍</span>
-        开始分析评估
-      </button>
-
-      <div class="tips">
-        <div class="tips-title">💡 使用提示</div>
-        <ul class="tips-list">
-          <li>上传视频后，点击「截取帧」按钮获取关键画面截图</li>
-          <li>建议截取开头、中间、结尾至少3帧作为分析依据</li>
-          <li>截图越丰富，分析结果越准确</li>
-          <li>分析结果仅供参考，可结合实际情况调整</li>
-        </ul>
-      </div>
+      <input type="file" id="fileInput" accept="video/*" multiple>
     </div>
 
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      <p>AI正在分析中，请稍候...</p>
-    </div>
+    <div class="count" id="count">共 0 个视频</div>
 
-    <div class="result-section" id="result">
-      <div class="score-card">
-        <div class="score-label">提示词与视频匹配度评分</div>
-        <div class="score-value" id="score">8.5</div>
-        <div class="score-desc" id="scoreDesc">匹配度较高，提示词基本得到执行</div>
-      </div>
+    <div class="video-list" id="videoList"></div>
+  </div>
 
-      <div class="card result-card">
-        <h3>📊 匹配度分析</h3>
-        <div class="content" id="matchAnalysis"></div>
-      </div>
-
-      <div class="card result-card">
-        <h3>✨ 提示词优点</h3>
-        <div class="content" id="strengths"></div>
-      </div>
-
-      <div class="card result-card">
-        <h3>🎯 整改方向与优化建议</h3>
-        <div class="content" id="suggestions"></div>
-        
-        <div class="optimized-prompt">
-          <div class="optimized-prompt-label">💌 优化后提示词示例</div>
-          <div class="optimized-prompt-content" id="optimizedPrompt"></div>
-        </div>
-      </div>
+  <!-- 播放弹窗 -->
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-content">
+      <video id="modalVideo" controls></video>
     </div>
   </div>
 
   <script>
-    let videoFile = null;
-    let capturedFrames = [];
+    const DB_NAME = 'VideoManager';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'videos';
+    let db;
 
-    const videoFileInput = document.getElementById('videoFile');
-    const uploadArea = document.getElementById('uploadArea');
-
-    videoFileInput.addEventListener('change', handleVideoSelect);
-
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-      uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadArea.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('video/')) {
-        loadVideo(file);
-      }
-    });
-
-    function handleVideoSelect(e) {
-      const file = e.target.files[0];
-      if (file) {
-        loadVideo(file);
-      }
-    }
-
-    function loadVideo(file) {
-      videoFile = file;
-      capturedFrames = [];
-      const url = URL.createObjectURL(file);
-      const videoPlayer = document.getElementById('videoPlayer');
-      videoPlayer.src = url;
-      
-      document.getElementById('videoPreview').classList.add('show');
-      document.getElementById('frameSection').classList.add('show');
-      document.getElementById('videoName').textContent = file.name;
-      document.getElementById('framesGrid').innerHTML = '';
-      uploadArea.style.display = 'none';
-    }
-
-    function removeVideo() {
-      videoFile = null;
-      capturedFrames = [];
-      document.getElementById('videoFile').value = '';
-      document.getElementById('videoPlayer').src = '';
-      document.getElementById('videoPreview').classList.remove('show');
-      document.getElementById('frameSection').classList.remove('show');
-      document.getElementById('framesGrid').innerHTML = '';
-      uploadArea.style.display = 'block';
-    }
-
-    function captureFrame(position) {
-      const video = document.getElementById('videoPlayer');
-      
-      if (position === 'end') {
-        video.currentTime = video.duration - 0.1;
-      } else {
-        video.currentTime = video.duration * position;
-      }
-
-      video.onseeked = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    // 初始化IndexedDB
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
         
-        const frameData = canvas.toDataURL('image/jpeg', 0.8);
-        capturedFrames.push(frameData);
+        request.onerror = () => reject(request.error);
         
-        const div = document.createElement('div');
-        div.className = 'frame-item';
-        div.innerHTML = `
-          <img src="${frameData}">
-          <div class="time">${video.currentTime.toFixed(2)}s</div>
+        request.onsuccess = () => {
+          db = request.result;
+          resolve(db);
+        };
+        
+        request.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+      });
+    }
+
+    // 保存视频到IndexedDB
+    async function saveVideo(file) {
+      return new Promise((resolve, reject) => {
+        const id = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const video = {
+          id,
+          name: file.name.replace(/\.[^/.]+$/, ''),
+          originalName: file.name,
+          type: file.type.split('/')[1].toUpperCase() || 'VIDEO',
+          size: file.size,
+          uploadTime: new Date().toISOString(),
+          data: file
+        };
+
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.add(video);
+        
+        request.onsuccess = () => resolve(video);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // 获取所有视频
+    async function getAllVideos() {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+        
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // 删除视频
+    async function deleteVideo(id) {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.delete(id);
+        
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    // 更新视频名称
+    async function updateVideoName(id, newName) {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const getRequest = store.get(id);
+        
+        getRequest.onsuccess = () => {
+          const video = getRequest.result;
+          video.name = newName;
+          const putRequest = store.put(video);
+          putRequest.onsuccess = () => resolve();
+          putRequest.onerror = () => reject(putRequest.error);
+        };
+        
+        getRequest.onerror = () => reject(getRequest.error);
+      });
+    }
+
+    // 格式化文件大小
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+
+    // 格式化日期
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // 渲染视频列表
+    async function renderList() {
+      const videos = await getAllVideos();
+      const list = document.getElementById('videoList');
+      const count = document.getElementById('count');
+      
+      count.textContent = `共 ${videos.length} 个视频`;
+      
+      if (videos.length === 0) {
+        list.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">📁</div>
+            <p>暂无视频，点击上方按钮上传</p>
+          </div>
         `;
-        document.getElementById('framesGrid').appendChild(div);
-      };
+        return;
+      }
+
+      // 按上传时间倒序排列
+      videos.sort((a, b) => new Date(b.uploadTime) - new Date(a.uploadTime));
+
+      list.innerHTML = videos.map(video => `
+        <div class="video-item" data-id="${video.id}">
+          <div class="video-icon">🎬</div>
+          <div class="video-info">
+            <div class="video-name">
+              <input type="text" value="${video.name}" onchange="renameVideo('${video.id}', this.value)">
+            </div>
+            <div class="video-meta">
+              <span>📅 ${formatDate(video.uploadTime)}</span>
+              <span>📦 ${video.type}</span>
+              <span>💾 ${formatSize(video.size)}</span>
+            </div>
+          </div>
+          <div class="video-actions">
+            <button class="btn btn-play" onclick="playVideo('${video.id}')">▶ 播放</button>
+            <button class="btn btn-delete" onclick="removeVideo('${video.id}')">🗑</button>
+          </div>
+        </div>
+      `).join('');
     }
 
-    function analyze() {
-      const prompt = document.getElementById('promptInput').value.trim();
-      
-      if (!prompt) {
-        alert('请填写提示词');
-        return;
-      }
-
-      if (!videoFile) {
-        alert('请上传视频文件');
-        return;
-      }
-
-      if (capturedFrames.length === 0) {
-        alert('请先截取至少一张视频帧');
-        return;
-      }
-
-      document.getElementById('loading').style.display = 'block';
-      document.getElementById('result').style.display = 'none';
-      document.getElementById('analyzeBtn').disabled = true;
-
-      setTimeout(() => {
-        const result = generateAnalysis(prompt, capturedFrames);
-        displayResult(result);
-      }, 1500);
+    // 重命名
+    async function renameVideo(id, newName) {
+      await updateVideoName(id, newName);
     }
 
-    function generateAnalysis(prompt, frames) {
-      const promptLower = prompt.toLowerCase();
-      
-      const hasScene = /场景|环境|地点|位置/.test(prompt);
-      const hasSubject = /车|汽车|轿车|主角|主体/.test(prompt);
-      const hasAction = /动作|运动|驶入|行驶|移动/.test(prompt);
-      const hasStyle = /风格|氛围|光线|色调|高级感/.test(prompt);
-      const hasDuration = /秒|时间|时长/.test(prompt);
-      
-      let score = 5;
-      if (hasScene) score += 0.8;
-      if (hasSubject) score += 0.8;
-      if (hasAction) score += 0.8;
-      if (hasStyle) score += 1;
-      if (hasDuration) score += 0.6;
-      
-      let issues = [];
-      if (!hasScene) {
-        issues.push('提示词缺少场景环境描述');
+    // 删除视频
+    async function removeVideo(id) {
+      if (confirm('确定要删除这个视频吗？')) {
+        await deleteVideo(id);
+        renderList();
       }
-      if (!hasStyle) {
-        issues.push('提示词缺少风格/光线要求');
+    }
+
+    // 播放视频
+    async function playVideo(id) {
+      const videos = await getAllVideos();
+      const video = videos.find(v => v.id === id);
+      if (video && video.data) {
+        const url = URL.createObjectURL(video.data);
+        const modalVideo = document.getElementById('modalVideo');
+        modalVideo.src = url;
+        document.getElementById('modal').classList.add('show');
       }
-      if (!hasDuration) {
-        issues.push('提示词缺少时长控制');
-      }
-      if (prompt.includes('缓慢') || prompt.includes('慢速')) {
-        if (!prompt.includes('快') && !prompt.includes('速度')) {
-          // 软性建议
+    }
+
+    // 关闭弹窗
+    function closeModal() {
+      document.getElementById('modal').classList.remove('show');
+      document.getElementById('modalVideo').src = '';
+    }
+
+    // 点击弹窗外部关闭
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target.id === 'modal') closeModal();
+    });
+
+    // 文件上传处理
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      for (const file of files) {
+        if (file.type.startsWith('video/')) {
+          await saveVideo(file);
         }
       }
-      
-      score = Math.min(10, Math.max(1, score - issues.length * 0.3));
-      const scoreNum = Math.round(score * 10) / 10;
-      
-      const matchAnalysis = generateMatchAnalysis(prompt, issues);
-      const strengths = generateStrengths(prompt);
-      const suggestions = generateSuggestions(issues, prompt);
-      const optimized = generateOptimizedPrompt(prompt);
-      
-      return {
-        score: scoreNum,
-        matchAnalysis,
-        strengths,
-        suggestions,
-        optimized,
-        frameCount: frames.length
-      };
-    }
+      renderList();
+      e.target.value = '';
+    });
 
-    function generateMatchAnalysis(prompt, issues) {
-      if (issues.length === 0) {
-        return `<strong>✅ 匹配度良好</strong>
-
-提示词包含了完整的描述维度：
-- ✓ 场景/环境
-- ✓ 主体内容
-- ✓ 动作描述
-- ✓ 风格要求
-- ✓ 时长控制
-
-建议：当前提示词结构合理，可继续使用并根据实际效果微调。`;
-      }
-      
-      return `<strong>⚠️ 存在${issues.length}处可优化</strong>
-
-当前提示词分析：
-${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
-
-<strong>建议：</strong>补充缺失的维度可以提高AI对提示词的理解准确度。`;
-    }
-
-    function generateStrengths(prompt) {
-      const strengths = [];
-      
-      if (/场景|环境/.test(prompt)) strengths.push('✓ 明确指定了场景环境');
-      if (/动作|运动|驶入/.test(prompt)) strengths.push('✓ 描述了主体动作');
-      if (/风格|氛围|光线/.test(prompt)) strengths.push('✓ 包含了风格要求');
-      if (/车牌|车标|品牌/.test(prompt)) strengths.push('✓ 注意到了细节元素');
-      if (/秒|时间|时长/.test(prompt)) strengths.push('✓ 给出了时长要求');
-      
-      if (strengths.length === 0) {
-        return `• 提示词基础结构完整，可在此基础上补充更多细节
-• 建议增加场景、动作、风格等维度的描述`;
-      }
-      
-      return strengths.join('\n') + '\n\n💡 保留这些优点，继续完善其他方面';
-    }
-
-    function generateSuggestions(issues, prompt) {
-      const suggestions = [];
-      
-      if (!prompt.includes('场景') && !prompt.includes('环境')) {
-        suggestions.push('1. <strong>补充场景描述</strong>：明确4S店/展厅/户外等环境');
-      }
-      if (!prompt.includes('光线') && !prompt.includes('灯光')) {
-        suggestions.push('2. <strong>增加光线要求</strong>：如"明亮灯光"、"自然光"等');
-      }
-      if (!prompt.includes('车牌') && !prompt.includes('车标')) {
-        suggestions.push('3. <strong>注意版权细节</strong>：如需车牌/车标可替换');
-      }
-      if (!prompt.includes('风格') && !prompt.includes('色调')) {
-        suggestions.push('4. <strong>明确风格</strong>：高端/科技/温馨等氛围');
-      }
-      if (!prompt.includes('秒') && !prompt.includes('时长')) {
-        suggestions.push('5. <strong>控制时长</strong>：建议5-10秒内');
-      }
-      if (!prompt.includes('镜头') && !prompt.includes('视角')) {
-        suggestions.push('6. <strong>增加镜头语言</strong>：如"航拍"、"近景"、"跟拍"等');
-      }
-      
-      return suggestions.join('\n\n');
-    }
-
-    function generateOptimizedPrompt(prompt) {
-      let optimized = prompt.trim();
-      
-      if (!optimized.includes('【场景】') && !optimized.includes('场景：')) {
-        optimized += '\n\n【场景】4S店展厅，明亮灯光，环境整洁';
-      }
-      if (!optimized.includes('【风格】') && !optimized.includes('风格：')) {
-        optimized += '\n【风格】高端大气，电影感色调';
-      }
-      if (!optimized.includes('【光线】') && !optimized.includes('光线：')) {
-        optimized += '\n【光线】自然光与人工光结合，主光从左上方45度照射';
-      }
-      if (!optimized.includes('【时长】') && !optimized.includes('时长：') && !optimized.includes('秒')) {
-        optimized += '\n【时长】5-8秒';
-      }
-      if (!optimized.includes('【镜头】') && !optimized.includes('镜头：')) {
-        optimized += '\n【镜头】中景到近景切换，缓慢推进';
-      }
-      if (!optimized.includes('【后期】') && !optimized.includes('后期：')) {
-        optimized += '\n【后期】车牌需要模糊/替换处理，避免真实车牌出镜';
-      }
-      
-      return optimized;
-    }
-
-    function displayResult(result) {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('analyzeBtn').disabled = false;
-      
-      const scoreEl = document.getElementById('score');
-      scoreEl.textContent = result.score;
-      scoreEl.className = 'score-value ' + 
-        (result.score >= 8 ? 'score-high' : result.score >= 6 ? 'score-mid' : 'score-low');
-      
-      const scoreDesc = document.getElementById('scoreDesc');
-      if (result.score >= 8) {
-        scoreDesc.textContent = `匹配度优秀，提示词质量高（基于${result.frameCount}帧分析）`;
-      } else if (result.score >= 6) {
-        scoreDesc.textContent = `匹配度良好，有小幅改进空间（基于${result.frameCount}帧分析）`;
-      } else {
-        scoreDesc.textContent = `匹配度一般，建议按下方建议优化（基于${result.frameCount}帧分析）`;
-      }
-      
-      document.getElementById('matchAnalysis').innerHTML = result.matchAnalysis;
-      document.getElementById('strengths').innerHTML = result.strengths;
-      document.getElementById('suggestions').innerHTML = result.suggestions;
-      document.getElementById('optimizedPrompt').textContent = result.optimized;
-      
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-    }
+    // 页面加载完成
+    initDB().then(() => renderList());
   </script>
 </body>
 </html>
