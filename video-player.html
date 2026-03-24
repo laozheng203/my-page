@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频播放器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: #0c1222; 
+      min-height: 100vh; 
+      color: #e2e8f0; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { max-width: 800px; width: 100%; }
+    
+    /* 标题 */
+    h1 { 
+      text-align: center; 
+      font-size: clamp(20px, 5vw, 32px); 
+      margin-bottom: 30px;
+    }
+    
+    /* 视频容器 */
+    .video-wrap { 
+      background: #131b2e; 
+      border-radius: 16px; 
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+    video { 
+      width: 100%; 
+      display: block; 
+    }
+    
+    /* 视频信息 */
+    .video-info {
+      padding: 20px;
+      text-align: center;
+    }
+    .video-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .video-desc {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    
+    /* 配置表单（仅自己可见） */
+    .config-panel {
+      background: #131b2e;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+    .config-panel h3 {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+    .form-group input { 
+      width: 100%; 
+      padding: 12px; 
+      background: #1a2342; 
+      border: 1px solid #2a3650; 
+      border-radius: 8px; 
+      color: #fff; 
+      font-size: 14px;
+    }
+    .form-group input:focus { outline: none; border-color: #0ea5e9; }
+    .btn-row { display: flex; gap: 10px; }
+    .btn { 
+      padding: 12px 20px; 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-size: 14px;
+      flex: 1;
+    }
+    .btn-blue { background: #0ea5e9; color: white; }
+    .btn-green { background: #22c55e; color: white; }
+    
+    /* 隐藏配置面板 */
+    .config-panel.hidden { display: none; }
+    .show-config { 
+      position: fixed; 
+      bottom: 20px; 
+      right: 20px;
+      background: rgba(255,255,255,0.1);
+      color: #94a3b8;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="pageTitle">视频播放器</h1>
+    
+    <div class="video-wrap">
+      <video id="player" controls>
+        您的浏览器不支持视频播放
+      </video>
+      <div class="video-info">
+        <div class="video-title" id="videoTitle">加载中...</div>
+        <div class="video-desc" id="videoDesc">点击播放按钮开始观看</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 配置面板 -->
+  <div class="config-panel" id="configPanel">
+    <h3>🔧 视频配置（仅自己可见）</h3>
+    <div class="form-group">
+      <label>视频标题</label>
+      <input type="text" id="inputTitle" placeholder="例如：汽车展示视频">
+    </div>
+    <div class="form-group">
+      <label>视频链接</label>
+      <input type="text" id="inputUrl" placeholder="粘贴视频URL地址">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-blue" onclick="saveConfig()">💾 保存配置</button>
+      <button class="btn btn-green" onclick="preview()">👁 预览效果</button>
+    </div>
+  </div>
+  
+  <button class="show-config" onclick="toggleConfig()">⚙️ 配置</button>
+
+  <script>
+    const VIDEO_CONFIG = 'video_player_config';
+    
+    // 加载配置
+    function loadConfig() {
+      const saved = localStorage.getItem(VIDEO_CONFIG);
+      if (saved) {
+        const config = JSON.parse(saved);
+        document.getElementById('inputTitle').value = config.title || '';
+        document.getElementById('inputUrl').value = config.url || '';
+        if (config.title) {
+          document.getElementById('pageTitle').textContent = config.title;
+          document.getElementById('videoTitle').textContent = config.title;
+        }
+        if (config.url) {
+          document.getElementById('player').src = config.url;
+        }
+      }
+    }
+    
+    // 保存配置
+    function saveConfig() {
+      const title = document.getElementById('inputTitle').value.trim();
+      const url = document.getElementById('inputUrl').value.trim();
+      
+      if (!title || !url) {
+        alert('请填写标题和视频链接！');
+        return;
+      }
+      
+      const config = { title, url };
+      localStorage.setItem(VIDEO_CONFIG, JSON.stringify(config));
+      alert('✅ 配置已保存！\n\n别人打开这个页面就会看到这个视频。');
+    }
+    
+    // 预览
+    function preview() {
+      const title = document.getElementById('inputTitle').value.trim();
+      const url = document.getElementById('inputUrl').value.trim();
+      
+      if (!title || !url) {
+        alert('请填写标题和视频链接！');
+        return;
+      }
+      
+      document.getElementById('pageTitle').textContent = title;
+      document.getElementById('videoTitle').textContent = title;
+      document.getElementById('player').src = url;
+      
+      alert('预览效果已更新，页面显示的就是别人看到的效果');
+    }
+    
+    // 切换配置面板
+    function toggleConfig() {
+      document.getElementById('configPanel').classList.toggle('hidden');
+    }
+    
+    // 初始化
+    loadConfig();
+  </script>
+</body>
+</html>
